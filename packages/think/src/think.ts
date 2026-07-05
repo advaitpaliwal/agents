@@ -11784,8 +11784,16 @@ export class Think<
       );
     }
 
+    const continuationAssistant = continuation
+      ? [...this.messages]
+          .reverse()
+          .find((message) => message.role === "assistant")
+      : undefined;
     const accumulator = new StreamAccumulator({
-      messageId: crypto.randomUUID()
+      messageId: continuationAssistant?.id ?? crypto.randomUUID(),
+      continuation,
+      existingParts: continuationAssistant?.parts,
+      existingMetadata: continuationAssistant?.metadata
     });
     // Expose the in-flight message so a client tool result arriving before the
     // end-of-stream persist lands on the accumulator instead of being dropped
